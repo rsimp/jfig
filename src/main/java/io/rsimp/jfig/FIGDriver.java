@@ -39,9 +39,14 @@ public class FIGDriver {
     }
 
     private void loadLayout(Layout layout){
+        this.horizontalMode = layout.horizontal.mode;
+        if (layout.horizontal.applyUniversalSmushing) {
+            this.setUniversalSmushing();
+            return;
+        }
+
         ArrayList<ISmushFunction> horizontalRules = new ArrayList<>();
         ArrayList<IHardBlankSmushFunction> horizontalHardBreakRules = new ArrayList<>();
-        this.horizontalMode = layout.horizontal.mode;
         if (this.horizontalMode == LayoutMode.SMUSHED){
             if (layout.horizontal.applyEqualCharSmushing)
                 horizontalRules.add(SmushRules.EqualCharacterRule);
@@ -55,12 +60,34 @@ public class FIGDriver {
                 horizontalRules.add(SmushRules.BigXRule);
             if (layout.horizontal.applyHardBlankSmushing)
                 horizontalHardBreakRules.add(SmushRules.HardblankRule);
-            if (layout.horizontal.applyUniversalSmushing) {
-                horizontalRules.add(SmushRules.UniversalSmushRule);
-                horizontalHardBreakRules.add(SmushRules.UniversalHardBlankSmushRule);
-            }
+            this.horizontalSmushFunction = SmushRules.aggregateRules(
+                horizontalRules,
+                horizontalHardBreakRules,
+                this.figFont.getHardBlank()
+            );
         }
-        this.horizontalSmushFunction = SmushRules.aggregateRules(horizontalRules, horizontalHardBreakRules, this.figFont.getHardBlank());
+
+    }
+
+    public void setFullWidthMode() {
+        this.horizontalMode = LayoutMode.FULL_SIZE;
+    }
+
+    public void setKerningMode(){
+        this.horizontalMode = LayoutMode.FITTED;
+    }
+
+    public void setUniversalSmushing(){
+        this.horizontalMode = LayoutMode.SMUSHED;
+        this.horizontalSmushFunction = SmushRules.universalSmush(this.figFont.getHardBlank());
+    }
+
+    public void setLayout(int layoutMask){
+        this.loadLayout(Layout.fromFullMask(layoutMask));
+    }
+
+    public void setOldLayout(int oldLayoutMask){
+        this.loadLayout(Layout.fromOldMask(oldLayoutMask));
     }
 
     //TODO add setters for mutable fields, or an options class

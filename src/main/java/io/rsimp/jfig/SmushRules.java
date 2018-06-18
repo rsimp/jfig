@@ -115,42 +115,15 @@ public class SmushRules {
     };
 
     /**
-     * Universal smush rule part 1:
+     * Universal smush rule part 2:
      * <p>
      * Replaces first character with second one in all cases except with hard blanks.
      * </p>
      */
-    public static ISmushFunction UniversalSmushRule = (char firstChar, char secondChar) -> Option.of(secondChar);
-
-    /**
-     * Universal smush rule part 2:
-     * <p>
-     * Hard blanks are replaced by any other non-whitespace character.
-     * </p>
-     */
-    public static IHardBlankSmushFunction UniversalHardBlankSmushRule = (char firstChar, char secondChar, char hardBlank) -> {
-        if (firstChar == hardBlank)
-            return Option.of(secondChar);
-        else
-            return Option.of(firstChar);
-    };
-
-    /**
-     * A higher order function to combine a list of ISmushFunction's into one
-     * @param smushRules List of ISmushFunction
-     * @return A single ISmushFunction that will execute the list of smush rules and returns the aggregate smush result
-     */
-    public static ISmushFunction aggregateRules(List<ISmushFunction> smushRules){
-        return (char firstChar, char secondChar) -> {
-            Option<Character> possibleSmush;
-            for (ISmushFunction nextSmushRule : smushRules){
-                possibleSmush = nextSmushRule.trySmush(firstChar, secondChar);
-                if (possibleSmush.isPresent()){
-                    return possibleSmush;
-                }
-            }
-            return Option.empty();
-        };
+    public static ISmushFunction universalSmush(char hardBlank){
+        return (char firstChar, char secondChar) -> secondChar == hardBlank
+            ? Option.of(firstChar)
+            : Option.of(secondChar);
     }
 
     /**

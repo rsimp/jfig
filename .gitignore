@@ -1,0 +1,10 @@
+# User-specific stuff
+.idea
+*.iml
+
+# Gradle
+.gradle
+
+# IntelliJ
+out/
+build/

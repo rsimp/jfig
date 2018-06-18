@@ -4,28 +4,24 @@ class Layout {
     final HorizontalLayout horizontal;
     final VerticalLayout vertical; //only in FullLayout, not in OldLayout
 
-    Layout(int fullLayoutMask){
+    private Layout(int fullLayoutMask){
         this.horizontal = new HorizontalLayout(fullLayoutMask);
         this.vertical = new VerticalLayout(fullLayoutMask);
     }
 
-    Layout(int oldLayoutMask, Option<Integer> fullLayoutMask){
-        this(mergeMasks(oldLayoutMask, fullLayoutMask));
+    static Layout fromFullMask(int fullLayoutMask){
+        return new Layout(fullLayoutMask);
     }
 
-    private static int mergeMasks(int oldLayoutMask, Option<Integer> fullLayoutMask){
-        if (fullLayoutMask.isPresent()) {
-            return fullLayoutMask.get();
-        } else {
-            int convertedLayout = oldLayoutMask;
-            if (convertedLayout > 0)
-                convertedLayout += 128; //controlled smushing (old layout doesn't have universal)
-            else if (convertedLayout == 0)
-                convertedLayout = 64; //kerning
-            else if (convertedLayout < 0)
-                convertedLayout = 0; //full size
-            return convertedLayout;
-        }
+    static Layout fromOldMask(int oldLayoutMask){
+        int convertedLayout = oldLayoutMask;
+        if (convertedLayout > 0)
+            convertedLayout += 128; //controlled smushing (old layout doesn't have universal)
+        else if (convertedLayout == 0)
+            convertedLayout = 64; //kerning
+        else if (convertedLayout < 0)
+            convertedLayout = 0; //full size
+        return new Layout(convertedLayout);
     }
 
     class HorizontalLayout{
@@ -54,7 +50,7 @@ class Layout {
             this.applyOppositePairSmushing = (mask & 8) == 8;
             this.applyBigXSmushing = (mask & 16) == 16;
             this.applyHardBlankSmushing = (mask & 32) == 32;
-            this.applyUniversalSmushing = (mask & (1+2+4+8+16+32)) == 0;
+            this.applyUniversalSmushing = (mask & (1+2+4+8+16+32+128)) == 128;
         }
     }
 

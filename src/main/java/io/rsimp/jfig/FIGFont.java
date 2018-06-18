@@ -32,8 +32,6 @@ class FIGFont {
 
     char getHardBlank(){ return this.header.hardBlank; }
 
-    int getCharacterHeight(){return this.header.characterHeight;}
-
     boolean getPrintRightToLeft() {
         return this.header.printRightToLeft.isPresent()
                 ? this.header.printRightToLeft.get()
@@ -48,7 +46,9 @@ class FIGFont {
         try (BufferedReader fontReader = new BufferedReader(new InputStreamReader(figfont, StandardCharsets.UTF_8))){
             //parse header
             this.header = new FIGFontHeader(fontReader.readLine());
-            this.layout = new Layout(this.header.oldLayoutMask, this.header.fullLayoutMask);
+            this.layout = this.header.fullLayoutMask.isPresent()
+                ? Layout.fromFullMask(this.header.fullLayoutMask.get())
+                : Layout.fromOldMask(this.header.oldLayoutMask);
 
             //parse comments but don't save, meant for authoring
             Utils.readlines(fontReader, this.header.numCommentLines);

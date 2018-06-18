@@ -11,9 +11,9 @@ class FIGure {
         for(int lineIndex = 0; lineIndex < this.lines.length; lineIndex++){
             FIGureLine line = new FIGureLine();
             FIGCharacter.FIGCharacterLine characterLine = figCharacter.lines[lineIndex];
-            String lineContent = prefix
-                    + Utils.repeatString(" ", characterLine.leftSpaces)
-                    + characterLine.content;
+            String lineContent = !characterLine.isEmpty()
+                ? prefix + Utils.repeatString(" ", characterLine.leftSpaces) + characterLine.content
+                : prefix;
             line.content.append(lineContent);
             line.rightSpaces = characterLine.rightSpaces;
             this.lines[lineIndex] = line;
@@ -32,8 +32,8 @@ class FIGure {
     void smushAppend(FIGCharacter figCharacter, ISmushFunction smushFunction){
         int overlapAmount = this.getMinimumAdjacentSpace(figCharacter) + 1;
         //TODO check if overlap amount is greater than width
-        HashMap<Integer, char[]> subcharacterOverlaps = getSubcharacterOverlaps(figCharacter, overlapAmount);
-        Option<HashMap<Integer, Character>> smushResults = trySmushOverlaps(subcharacterOverlaps, smushFunction);
+        HashMap<Integer, char[]> subcharacterOverlaps = this.getSubcharacterOverlaps(figCharacter, overlapAmount);
+        Option<HashMap<Integer, Character>> smushResults = this.trySmushOverlaps(subcharacterOverlaps, smushFunction);
         if (smushResults.isPresent()){
             FIGCharacter smushedCharacter = figCharacter.applySmushing(smushResults.get());
             this.append(smushedCharacter, overlapAmount);
@@ -77,22 +77,23 @@ class FIGure {
             FIGureLine figureLine = this.lines[lineIndex];
             FIGCharacter.FIGCharacterLine figCharacterLine = figCharacter.lines[lineIndex];
 
-            //handle overlap deletions or fill in dead space
-            int contentIndex = figureLine.rightSpaces + figCharacterLine.leftSpaces - overlapAmount;
-            if (contentIndex > 0) {
-                figureLine.content.append(Utils.repeatString(" ", contentIndex));
-            } else {
-                int lastIndex = figureLine.content.length();
-                figureLine.content.delete(lastIndex + contentIndex, lastIndex);
-            }
-
-            //append content
-            figureLine.content.append(figCharacterLine.content);
-
-            //update spacing metadata
             if (figCharacterLine.isEmpty()) {
+                //only need to update line spacing meta
                 figureLine.rightSpaces += figCharacterLine.rightSpaces - overlapAmount;
             } else {
+                //handle overlap deletions or fill in dead space
+                int spaceAdjustedOverlap = overlapAmount - (figureLine.rightSpaces + figCharacterLine.leftSpaces);
+                if (spaceAdjustedOverlap > 0) {
+                    int lastIndex = figureLine.content.length();
+                    figureLine.content.delete(lastIndex - spaceAdjustedOverlap, lastIndex);
+                } else {
+                    figureLine.content.append(Utils.repeatString(" ", -spaceAdjustedOverlap));
+                }
+
+                //append content
+                figureLine.content.append(figCharacterLine.content);
+
+                //update line spacing meta
                 figureLine.rightSpaces = figCharacterLine.rightSpaces;
             }
         }
@@ -109,8 +110,12 @@ class FIGure {
 
     String toString(char hardBlank){
         StringBuilder returnString = new StringBuilder();
-        for(FIGureLine fiGureLine : this.lines)
-            returnString.append(fiGureLine.content.toString().replace(hardBlank, ' ') + "\n");
+        for(FIGureLine fiGureLine : this.lines) {
+            String formattedLine = fiGureLine.content.toString().replace(hardBlank, ' ')
+                                    + Utils.repeatString(" ", fiGureLine.rightSpaces)
+                                    + "\n";
+            returnString.append(formattedLine);
+        }
         if(returnString.length() > 0)
             returnString.deleteCharAt(returnString.length()-1);
         return returnString.toString();
