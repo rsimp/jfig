@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 //information about structure here: http://www.jave.de/figlet/figfont.html
 class FIGFont {
-    private static final Pattern CODE_TAG_PATTERN = Pattern.compile("(-)?(0x?)?(\\d+)(?:  (.*))?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CODE_TAG_PATTERN = Pattern.compile("(-)?(0x?)?([0-9abcdef]+)(?:\\s+(.*))?", Pattern.CASE_INSENSITIVE);
     private static final ArrayList<Character> requiredCharactersList = new ArrayList<>();
     static {
         for(int charCode = 32; charCode < 127; charCode++)

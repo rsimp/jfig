@@ -104,15 +104,23 @@ public class FIGDriverTest {
         String contents = new String(Files.readAllBytes(file.toPath()));
         assertEquals(contents, banner);
     }
+
+    @Test
+    public void convertToCustomFontWithOctalAndHexCustomTagsCodes() throws Exception {
+        FIGDriver driver = new FIGDriver(getClass().getResource("/smslant_custom_codetags.flf"));
+        String banner = driver.convert("¡¢£¤", "");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("smslant_codetags.txt").getPath());
+        String contents = new String(Files.readAllBytes(file.toPath()));
+        assertEquals(contents, banner);
+    }
     
     //TODO Doctor smslant.flf to use old layout and print right to left
     // - make fixture and test for reverse banner
     
     //TODO make tests that covers more smushing rule logic
     
-    //TODO test code tag characters
-    // - have basis test for a bunch of them
-    // - doctor smslant.flf to have same code tags use octal and hex
-    //   - find a font file that uses octal or hex as an example
+    //TODO test to load figfont from file and not URL
 }
 
