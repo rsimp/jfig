@@ -22,6 +22,29 @@ public class FIGDriverTest {
     }
 
     @Test
+    public void convertToSmslantLoadAsFile() throws Exception {
+        FIGDriver driver = new FIGDriver(new File(getClass().getResource("/smslant.flf").toURI()));
+        String banner = driver.convert(testMessage, "");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("smslant_parsed.txt").getPath());
+        String contents = new String(Files.readAllBytes(file.toPath()));
+        assertEquals(contents, banner);
+    }
+
+    @Test
+    public void convertToSmslantReverse() throws Exception {
+        FIGDriver driver = new FIGDriver(new File(getClass().getResource("/smslant.flf").toURI()));
+        driver.setReverseMode();
+        String banner = driver.convert(testMessage, "");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("smslant_reverse.txt").getPath());
+        String contents = new String(Files.readAllBytes(file.toPath()));
+        assertEquals(contents, banner);
+    }
+
+    @Test
     public void convertToSmslantUniversalSmushing() throws Exception {
         FIGDriver driver = new FIGDriver(getClass().getResource("/smslant.flf"));
         driver.setUniversalSmushing();
@@ -70,6 +93,18 @@ public class FIGDriverTest {
     }
 
     @Test
+    public void convertToSmslantCustomLayoutFullSmushRules2() throws Exception {
+        FIGDriver driver = new FIGDriver(getClass().getResource("/smslant.flf"));
+        driver.setOldLayout(63);
+        String banner = driver.convert("  >< \"% #\"", "");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("extra_smush_rules.txt").getPath());
+        String contents = new String(Files.readAllBytes(file.toPath()));
+        assertEquals(contents, banner);
+    }
+
+    @Test
     public void convertToSmslantCustomLayoutKerning() throws Exception {
         FIGDriver driver = new FIGDriver(getClass().getResource("/smslant.flf"));
         driver.setOldLayout(0);
@@ -106,6 +141,17 @@ public class FIGDriverTest {
     }
 
     @Test
+    public void convertToCustomFontWithOldLayout() throws Exception {
+        FIGDriver driver = new FIGDriver(getClass().getResource("/smslant_old_layout.flf"));
+        String banner = driver.convert(testMessage, "");
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("smslant_old_layout.txt").getPath());
+        String contents = new String(Files.readAllBytes(file.toPath()));
+        assertEquals(contents, banner);
+    }
+
+    @Test
     public void convertToCustomFontWithOctalAndHexCustomTagsCodes() throws Exception {
         FIGDriver driver = new FIGDriver(getClass().getResource("/smslant_custom_codetags.flf"));
         String banner = driver.convert("¡¢£¤", "");
@@ -115,12 +161,5 @@ public class FIGDriverTest {
         String contents = new String(Files.readAllBytes(file.toPath()));
         assertEquals(contents, banner);
     }
-    
-    //TODO Doctor smslant.flf to use old layout and print right to left
-    // - make fixture and test for reverse banner
-    
-    //TODO make tests that covers more smushing rule logic
-    
-    //TODO test to load figfont from file and not URL
 }
 

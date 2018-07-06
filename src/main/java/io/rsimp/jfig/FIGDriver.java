@@ -17,18 +17,24 @@ public class FIGDriver {
     private ISmushFunction horizontalSmushFunction;
 
     /**
+     * FIGDriver constructor that takes figfont in as a file
+     * 
      * @param figfont
      * @throws IOException
      */
     public FIGDriver(File figfont) throws IOException { this(new FileInputStream(figfont)); }
 
     /**
+     * FIGDriver constructor that takes figfont in as a URL
+     * 
      * @param figfontURL
      * @throws IOException
      */
     public FIGDriver(URL figfontURL) throws IOException { this(figfontURL.openStream()); }
 
     /**
+     * FIGDriver constructor that takes figfont as any InputStream
+     * 
      * @param figfontStream
      * @throws IOException
      */
@@ -69,31 +75,57 @@ public class FIGDriver {
 
     }
 
+    /**
+     * Sets horizontal layout mode to use full width fig characters
+     */
     public void setFullWidthMode() {
         this.horizontalMode = LayoutMode.FULL_SIZE;
     }
 
+    /**
+     * Sets horizontal layout mode to fit fig characters as closely together by removing overlapping whitespace
+     */
     public void setKerningMode(){
         this.horizontalMode = LayoutMode.FITTED;
     }
 
+    /**
+     * Sets horizontal layout mode to Universal Smushing
+     * Universal smushing simply overrides the sub-character from the earlier FIGcharacter with the sub-character from the later FIGcharacter
+     */
     public void setUniversalSmushing(){
         this.horizontalMode = LayoutMode.SMUSHED;
         this.horizontalSmushFunction = SmushRules.universalSmush(this.figFont.getHardBlank());
     }
 
+    /**
+     * Sets the layout mask which determines the horizontal layout mode
+     * 
+     * @param layoutMask
+     */
     public void setLayout(int layoutMask){
         this.loadLayout(Layout.fromFullMask(layoutMask));
     }
 
+    /**
+     * Sets the layout mask which determines the horizontal layout mode using the older format
+     *  
+     * @param oldLayoutMask
+     */    
     public void setOldLayout(int oldLayoutMask){
         this.loadLayout(Layout.fromOldMask(oldLayoutMask));
     }
 
-    //TODO add setters for mutable fields, or an options class
+    /**
+     * Sets the output to display in reverse
+     */
+    public void setReverseMode(){
+        this.printRightToLeft = true;
+    }
 
     /**
-     *
+     * Converts a string into a FIGure
+     * 
      * @param input
      * @param prefix
      * @return
