@@ -1,9 +1,5 @@
 language: java
 
-before_install:
-- echo -e "machine github.com\n  login $GITHUB_TOKEN" > ~/.netrc
-- git lfs pull
-
 install:
 - ./gradlew assemble
 
