@@ -1,10 +1,10 @@
 language: java
 
 install:
-- ./gradlew assemble
+  - ./gradlew assemble
 
 script:
-- ./gradlew check
+  - ./gradlew check
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -16,4 +16,4 @@ cache:
 
 branches:
   only:
-  - master
+    - master
