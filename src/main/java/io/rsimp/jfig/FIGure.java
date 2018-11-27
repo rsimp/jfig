@@ -31,7 +31,6 @@ class FIGure {
 
     void smushAppend(FIGCharacter figCharacter, ISmushFunction smushFunction){
         int overlapAmount = this.getMinimumAdjacentSpace(figCharacter) + 1;
-        //TODO check if overlap amount is greater than width
         HashMap<Integer, char[]> subcharacterOverlaps = this.getSubcharacterOverlaps(figCharacter, overlapAmount);
         Option<HashMap<Integer, Character>> smushResults = this.trySmushOverlaps(subcharacterOverlaps, smushFunction);
         if (smushResults.isPresent()){
