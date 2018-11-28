@@ -1,10 +1,15 @@
-# User-specific stuff
+# Gradle
+.gradle
+out/
+
+# IntelliJ
+build/
 .idea
 *.iml
 
-# Gradle
-.gradle
+# Eclipse
+bin/
+.settings/
 
-# IntelliJ
-out/
-build/
+# Theia
+settings.json
